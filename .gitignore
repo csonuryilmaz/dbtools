@@ -1,4 +1,33 @@
+# Created by https://www.toptal.com/developers/gitignore/api/groovy
+# Edit at https://www.toptal.com/developers/gitignore?templates=groovy
+
+### Groovy ###
+# .gitignore created from Groovy contributors in https://github.com/apache/groovy/blob/master/.gitignore
+
+user.gradle
+.gradle/
 target/
+build/
+out/
+
+*.DS_Store
+*.class
+*.swp
+*~
+
+.idea
+*.iml
+*.ipr
+*.iws
+.shelf
+
+.settings/
+.classpath
+.project
+bin/
+
+# Github's Maven Gitignore Patterns
+
 pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup
