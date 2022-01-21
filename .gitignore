@@ -1,8 +1,4 @@
-# Created by https://www.toptal.com/developers/gitignore/api/groovy
-# Edit at https://www.toptal.com/developers/gitignore?templates=groovy
-
 ### Groovy ###
-# .gitignore created from Groovy contributors in https://github.com/apache/groovy/blob/master/.gitignore
 
 user.gradle
 .gradle/
@@ -28,6 +24,8 @@ bin/
 
 # Github's Maven Gitignore Patterns
 
+### Maven ###
+
 pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup
@@ -38,3 +36,9 @@ buildNumber.properties
 .mvn/timing.properties
 # https://github.com/takari/maven-wrapper#usage-without-binary-jar
 .mvn/wrapper/maven-wrapper.jar
+
+### Other Ignores ###
+
+exportdb*.json
+schema.sql
+importdb*.json

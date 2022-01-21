@@ -1,0 +1,12 @@
+{
+  "connection": {
+    "username": "",
+    "password": "",
+    "host": "",
+    "database": "",
+    "port": 3306
+  },
+  "excluded_tables": [
+
+  ]
+}

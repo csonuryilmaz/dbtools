@@ -1,60 +1,56 @@
 #!/usr/bin/env groovy
 
-import groovy.json.JsonSlurper
+GroovyShell shell = new GroovyShell()
+def common = shell.parse(new File('src/main/groovy/common.groovy'))
 
-void checkDependency(String command) {
-    def process
-    println("⚙️ Check ${command} dependency ...")
-    
-    def mysqlCmd = "${command} --version"
-    try {
-        process = mysqlCmd.execute()
-        process.waitForProcessOutput(System.out, System.err)
-    } catch (e) {
-        println(e.getMessage())
-    }
+println()
+println('⚙️ Check mysqldump ...')
+common.mysqldumpShouldExist()
+println('✔️ Success.')
 
-    if (process?.exitValue() !=  0) {
-        println("✖️ Couldn't  find ${command} utilities! Check whether ${command} command is in PATH and executable.")
-        System.exit(1)
-    }
-    println('✔️ Success.')
-}
-
-checkDependency('mysql')
-checkDependency('mysqldump')
-
+println()
 println('⚙️ Parse config JSON ...')
-def configJson
-try {
-    configJson = new JsonSlurper().parseText(new File('config.json').text)
-} catch (e) {
-    println(e.getMessage())
-    println('✖️ Config JSON couldn\'t be parsed!')
-    System.exit(2)
-}
+def configJson = common.configJsonShouldBeParseable()
+common.userCredentialsShouldBeFilled(configJson)
+common.serverArgumentsShouldBeFilled(configJson)
+common.connectionPortShouldBeInRange(configJson)
+println('✔️ Success.')
 
-void checkPort(String side, def dbPort) {
-    int port
-    if (dbPort instanceof String) {
-        try {
-            port = dbPort.toInteger()
-        } catch (e) {
-            println(e.getClass().toString() + ' ' + e.getMessage())
-            println("✖️ Port for ${side} database connection must be an integer value up to 65535. For example, 3306.")
-            System.exit(2)
+println()
+println('⚙️ Execute mysqldump ...')
+
+String mysqldumpCmd = 'mysqldump --force --single-transaction --routines --triggers --events --no-data'
+mysqldumpCmd += " --host=${configJson.connection.host.trim()}"
+mysqldumpCmd += " --port=${configJson.connection.port}"
+mysqldumpCmd += " --user=${configJson.connection.username.trim()}"
+mysqldumpCmd += " --password=${configJson.connection.password.trim()}"
+
+if (configJson.excluded_tables) {
+    int ignoredCnt
+    for (table in configJson.excluded_tables) {
+        table = table.trim()
+        if (table) {
+            mysqldumpCmd += " --ignore-table=${configJson.connection.database.trim()}.${table}"
+            ignoredCnt++
         }
-    } else {
-        port = dbPort
     }
-    
-    if (port < 1 || port > 65535) {
-        println("✖️ Port for ${side} database connection must be an integer value up to 65535. For example, 3306.")
-        System.exit(2)
-    }
+    println("Info: ${ignoredCnt} table(s) will be excluded from database export.")
 }
 
-checkPort('source', configJson.source_db_connection_info.port)
-checkPort('destination', configJson.destination_db_connection_info.port )
+mysqldumpCmd += " --result-file=schema.sql"
+
+mysqldumpCmd += " " + configJson.connection.database.trim()
+
+common.getUserPermissionIfOutputFileExists()
+
+println('Info: You can also track export process from SQL file. For example, tail -f schema.sql')
+
+println()
+println(mysqldumpCmd)
+println()
+
+println('Please wait while dumping in progress ...')
+println()
+common.runCommand(mysqldumpCmd, 'Mysqldump exit with error code, please check mysqldump error messages and try again.')
 
 println('✔️ Success.')
