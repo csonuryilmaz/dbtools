@@ -20,6 +20,14 @@ println()
 println('⚙️ Execute mysqldump ...')
 
 String mysqldumpCmd = 'mysqldump --force --single-transaction --routines --triggers --events --no-data'
+
+for (argument in configJson.additional_arguments) {
+    argument = " " + argument.trim()
+    if (argument) {
+        mysqldumpCmd += argument
+    }
+}
+
 mysqldumpCmd += " --host=${configJson.connection.host.trim()}"
 mysqldumpCmd += " --port=${configJson.connection.port}"
 mysqldumpCmd += " --user=${configJson.connection.username.trim()}"
