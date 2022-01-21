@@ -49,6 +49,12 @@ println()
 println(createDatabaseCmd)
 println()
 common.runCommand(createDatabaseCmd, genericFailMsg)
+println('✔️ Success.')
+
+println()
+println('⚙️ Import database ...')
+
+common.schemaSQLFileShouldExist()
 
 mysqlCmd += "--database=${configJson.connection.database.trim()}"
 mysqlCmd += "< schema.sql"

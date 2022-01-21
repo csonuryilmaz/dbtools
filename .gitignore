@@ -40,5 +40,5 @@ buildNumber.properties
 ### Other Ignores ###
 
 exportdb*.json
-schema.sql
+schema*.sql
 importdb*.json

@@ -106,3 +106,9 @@ void mysqlShouldExist() {
     def mysqlCmd = 'mysql --version'
     runCommand(mysqlCmd, 'Could not find mysql utilities! Check whether mysql command is in PATH and executable.')
 }
+
+void schemaSQLFileShouldExist() {
+    if (!new File('schema.sql').exists()) {
+        terminateWithMessage('Schema.sql file not found! You can use exportdb command to get schema file from database.')
+    }
+}
