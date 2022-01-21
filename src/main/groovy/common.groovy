@@ -5,7 +5,7 @@ void terminateWithMessage(String msg) {
     System.exit(1)
 }
 
-void runCommand(String command, String failMsg) {
+void runCommand(def command, String failMsg) {
     def process
     try {
         process = command.execute()
@@ -24,13 +24,13 @@ void mysqldumpShouldExist() {
     runCommand(mysqldumpCmd, 'Could not find mysqldump utilities! Check whether mysqldump command is in PATH and executable.')
 }
 
-def configJsonShouldBeParseable() {
+def configJsonShouldBeParseable(String configFile) {
     def configJson
     try {
-        configJson = new JsonSlurper().parseText(new File('exportdb.json').text)
+        configJson = new JsonSlurper().parseText(new File(configFile).text)
         
         if (!configJson.connection) {
-            terminateWithMessage('Could not find connection section in JSON arguments. (exportdb.json->connection)')
+            terminateWithMessage("Could not find connection section in JSON arguments. (${configFile}->connection)")
         }
     } catch (e) {
         println(e.getMessage())
@@ -41,7 +41,7 @@ def configJsonShouldBeParseable() {
 }
 
 void userCredentialsShouldBeFilled(def configJson){
-    String info = 'Username and password must be set in JSON arguments. (exportdb.json->connection)'
+    String info = 'Username and password must be set in JSON arguments.'
 
     if (!configJson.connection.username) {
         println('Could not find username in JSON arguments.')
@@ -54,7 +54,7 @@ void userCredentialsShouldBeFilled(def configJson){
 }
 
 void serverArgumentsShouldBeFilled(def configJson){
-    String info = 'Host and database must be set in JSON arguments. (exportdb.json->connection)'
+    String info = 'Host and database must be set in JSON arguments.'
     
     if (!configJson.connection.host) {
         println('Could not find host in JSON arguments.')
@@ -70,7 +70,7 @@ void connectionPortShouldBeInRange(def configJson){
     String info = 'Port for database connection must be an integer value up to 65535. For example, 3306.'
     
     if (!configJson.connection.port) {
-        println('Could not find port in JSON arguments. (exportdb.json->connection)')
+        println('Could not find port in JSON arguments. ')
         terminateWithMessage(info)
     }
     
@@ -100,4 +100,9 @@ void getUserPermissionIfOutputFileExists() {
             System.exit(2)
         }
     }
+}
+
+void mysqlShouldExist() {
+    def mysqlCmd = 'mysql --version'
+    runCommand(mysqlCmd, 'Could not find mysql utilities! Check whether mysql command is in PATH and executable.')
 }

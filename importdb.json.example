@@ -1,0 +1,12 @@
+{
+  "connection": {
+    "username": "",
+    "password": "",
+    "host": "",
+    "database": "",
+    "port": 3306
+  },
+  "drop_database_if_exists": true,
+  "character_set": "utf8",
+  "collate": "utf8_general_ci"
+}

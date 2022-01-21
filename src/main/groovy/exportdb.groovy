@@ -10,7 +10,7 @@ println('✔️ Success.')
 
 println()
 println('⚙️ Parse config JSON ...')
-def configJson = common.configJsonShouldBeParseable()
+def configJson = common.configJsonShouldBeParseable('exportdb.json')
 common.userCredentialsShouldBeFilled(configJson)
 common.serverArgumentsShouldBeFilled(configJson)
 common.connectionPortShouldBeInRange(configJson)
