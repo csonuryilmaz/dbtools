@@ -94,12 +94,20 @@ void connectionPortShouldBeInRange(def configJson){
 
 void getUserPermissionIfOutputFileExists() {
     if (new File('schema.sql').exists()) {
-        def answer =  System.console().readLine('Warn: It seems you have a schema.sql file in current working directory. Overwrite? (y/n) ')
+        def answer =  readLine('Warn: It seems you have a schema.sql file in current working directory. Overwrite? (y/n) ')
         if (answer.length() == 0 || answer.toLowerCase().charAt(0) == 'n') {
-            println('✖️ Terminated by user request.')
-            System.exit(2)
+            terminateWithMessage('Terminated by user request.')
         }
     }
+}
+
+String readLine(String format, Object... args) throws IOException {
+    if (System.console() != null) {
+        return System.console().readLine(format, args);
+    }
+    System.out.print(String.format(format, args));
+    BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+    return reader.readLine();
 }
 
 void mysqlShouldExist() {
