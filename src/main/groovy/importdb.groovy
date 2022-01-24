@@ -25,6 +25,7 @@ mysqlCmd = ['mysql','--force','--verbose','--connect-timeout=60']
 if (!common.isOSWindows()) {
     mysqlCmd << '--skip-pager'
 }
+mysqlCmd << '--default-character-set=utf8mb4'
 mysqlCmd << "--host=${configJson.connection.host.trim()}"
 mysqlCmd << "--port=${configJson.connection.port}"
 mysqlCmd << "--user=${configJson.connection.username.trim()}"
