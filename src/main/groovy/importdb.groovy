@@ -21,7 +21,10 @@ println('⚙️ Create database ...')
 
 String genericFailMsg = 'Mysql exit with error code! Please check error messages and try again if needed.'
 
-mysqlCmd = ['mysql','--skip-pager','--force','--verbose','--connect-timeout=60']
+mysqlCmd = ['mysql','--force','--verbose','--connect-timeout=60']
+if (!common.isOSWindows()) {
+    mysqlCmd << '--skip-pager'
+}
 mysqlCmd << "--host=${configJson.connection.host.trim()}"
 mysqlCmd << "--port=${configJson.connection.port}"
 mysqlCmd << "--user=${configJson.connection.username.trim()}"

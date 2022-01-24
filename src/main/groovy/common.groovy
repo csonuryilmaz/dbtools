@@ -155,3 +155,7 @@ void schemaSQLFileShouldExist() {
         terminateWithMessage('Schema.sql file not found! You can use exportdb command to get schema file from database.')
     }
 }
+
+boolean isOSWindows() {
+    return System.properties['os.name'].toLowerCase().contains('windows')
+}
