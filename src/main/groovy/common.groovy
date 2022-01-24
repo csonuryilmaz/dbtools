@@ -19,6 +19,18 @@ void runCommand(def command, String failMsg) {
     }
 }
 
+int runCommand(def command) {
+    def process
+    try {
+        process = command.execute()
+        process.waitForProcessOutput(System.out, System.err)
+    } catch (e) {
+        println(e.getMessage())
+    }
+
+    return process?.exitValue()
+}
+
 void mysqldumpShouldExist() {
     def mysqldumpCmd = 'mysqldump --version'
     runCommand(mysqldumpCmd, 'Could not find mysqldump utilities! Check whether mysqldump command is in PATH and executable.')
@@ -93,12 +105,35 @@ void connectionPortShouldBeInRange(def configJson){
 }
 
 void getUserPermissionIfOutputFileExists() {
-    if (new File('schema.sql').exists()) {
+    file = new File('schema.sql')
+    if (file.exists() && file.length()>0) {
         def answer =  readLine('Warn: It seems you have a schema.sql file in current working directory. Overwrite? (y/n) ')
         if (answer.length() == 0 || answer.toLowerCase().charAt(0) == 'n') {
             terminateWithMessage('Terminated by user request.')
         }
     }
+}
+
+void truncateOutputFileIfExists() {
+    file = new File('schema.sql')
+    if (file.exists()) {
+        file.delete()
+    }
+    file.createNewFile()
+}
+
+boolean outputFileHasAnyCreateTableStatement() {
+    boolean found = false
+    new File("schema.sql").withReader('UTF-8') { reader ->
+        def line
+        while ((line = reader.readLine()) != null) { 
+            found = line.toLowerCase().contains("create table")
+            if (found) {
+                return
+            }
+        }
+    }
+    return found
 }
 
 String readLine(String format, Object... args) throws IOException {

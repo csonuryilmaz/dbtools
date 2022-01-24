@@ -50,6 +50,7 @@ mysqldumpCmd += " --result-file=schema.sql"
 mysqldumpCmd += " " + configJson.connection.database.trim()
 
 common.getUserPermissionIfOutputFileExists()
+common.truncateOutputFileIfExists()
 
 println('Info: You can also track export process from SQL file. For example, tail -f schema.sql')
 
@@ -59,6 +60,15 @@ println()
 
 println('Please wait while dumping in progress ...')
 println()
-common.runCommand(mysqldumpCmd, 'Mysqldump exit with error code, please check mysqldump error messages and try again.')
 
-println('✔️ Success.')
+exitCode = common.runCommand(mysqldumpCmd)
+if (exitCode == 0) { // success
+    println('✔️ Mysqldump successfully exported database to schema.sql file.')    
+} else {
+    if (common.outputFileHasAnyCreateTableStatement()) { // warning
+        println('⚠️ Mysqldump has some warnings but it may be ok. Check messages and schema.sql file.')
+    } else { // fatal error
+        println('✖️ Mysqldump exit with error code. Check error messages and try again.')
+        System.exit(exitCode)
+    }
+}
